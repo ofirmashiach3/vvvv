@@ -15,21 +15,14 @@
     <div id="start-screen">
         <div class="start-content">
             <h1>🏪 Shop Tycoon</h1>
-            <p class="subtitle">נהל את החנות שלך, מלא מדפים, שדרג ותרוויח!</p>
-            <div class="controls-info">
-                <div class="control-item"><span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span> תנועה</div>
-                <div class="control-item">🖱️ גלגלת = זום</div>
-                <div class="control-item">📦 עמוד ליד ארגז = אסוף סחורה</div>
-                <div class="control-item">🗄️ עמוד ליד מדף = מלא אותו</div>
-                <div class="control-item">🟢 דרוך על כפתור ירוק = קנה/שדרג</div>
-            </div>
-            <button id="start-btn" onclick="startGame()">▶ התחל לשחק!</button>
+            <p class="subtitle">נהל את החנות, מלא מדפים ותרוויח!</p>
+            <button id="start-btn" onclick="startGame()">הבנתי, בוא נתחיל!</button>
         </div>
     </div>
 
     <!-- HUD -->
     <div id="hud" style="display:none;">
-        <div class="hud-panel hud-money" id="hud-money">💰 $500</div>
+        <div class="hud-panel hud-money" id="hud-money">💰 $100</div>
         <div class="hud-panel hud-inventory" id="hud-inventory">📦 0/5</div>
         <div class="hud-panel hud-customers" id="hud-customers">👥 0/10</div>
         <div class="hud-panel hud-stats" id="hud-stats">⚡1 | ⭐1 | 🎒1</div>
@@ -41,8 +34,17 @@
     <!-- Floating labels container -->
     <div id="labels-container"></div>
 
+    <!-- Tutorial Marker -->
+    <div id="tutorial-marker" style="display:none;">
+        <div class="arrow-down">▼</div>
+        <div class="tutorial-text" id="tutorial-text"></div>
+    </div>
+
     <!-- Money popups container -->
     <div id="popups-container"></div>
+    
+    <!-- Customer Emotes container -->
+    <div id="emotes-container"></div>
 
     <!-- Mobile Joystick -->
     <div id="joystick-zone" style="display:none;">

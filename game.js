@@ -15,11 +15,14 @@ const DEPOSIT_RATE = 3;   // items/sec to shelf
 const CUSTOMER_COLORS = [0xe74c3c, 0x9b59b6, 0xe67e22, 0x1abc9c, 0xf39c12, 0xd35400, 0x8e44ad, 0x2ecc71];
 
 // ===== GAME STATE =====
-let money = 500;
+let money = 100;
 let inventory = { current: 0, max: 5 };
 let upgrades = { registerSpeed: 1, quality: 1, capacity: 1 };
 let totalEarned = 0, customersServed = 0;
 let gameStarted = false;
+
+// Tutorial State
+let tutorialStep = 1; // 1: Crate, 2: Shelf, 0: Done
 
 // Object arrays
 let shelves = [];
@@ -45,6 +48,7 @@ let joystick = { active: false, x: 0, y: 0, touchId: null };
 let hudMoney, hudInventory, hudCustomers, hudStats, interactionHint;
 let labelsContainer, popupsContainer;
 let joystickZone, joystickBase, joystickStick;
+let tutorialMarker, tutorialText, emotesContainer;
 
 // ===== MATERIALS (reusable) =====
 let mats = {};
@@ -733,6 +737,7 @@ function updateButtons(delta) {
         // Update label affordability class
         if (btn.label) {
             btn.label.classList.toggle('cant-afford', !canAfford);
+            btn.label.classList.toggle('affordable', canAfford);
             btn.label.querySelector('.label-cost').textContent = `$${btn.cost}`;
         }
 
@@ -807,7 +812,7 @@ function tryPurchase(btn) {
         if (btn.ring) btn.ring.visible = false;
         if (btn.label) btn.label.style.display = 'none';
     } else {
-        btn.cost = Math.round(btn.cost * 1.6);
+        btn.cost = Math.round(btn.cost * 1.8); // Exponential scaling
         btn.cooldown = 0.8;
     }
 }
@@ -941,11 +946,36 @@ function updateCustomers(delta) {
                         c.targetShelf.stock--;
                         updateShelfVisuals(c.targetShelf);
                         const qualityMult = 1 + (upgrades.quality - 1) * 0.25;
-                        c.itemValue = Math.round(10 * qualityMult);
+                        c.itemValue = Math.round((15 + Math.random() * 5) * qualityMult);
+                        
+                        // Go to register
+                        const queuePos = c.targetReg.queue.length;
+                        if (queuePos < c.targetReg.queuePositions.length) {
+                            c.target = c.targetReg.queuePositions[queuePos].clone();
+                            c.targetReg.queue.push(c);
+                            c.state = 'goingToRegister';
+                        } else {
+                            c.state = 'leaving';
+                            c.target = new THREE.Vector3((Math.random() - 0.5) * 4, 0, 18);
+                        }
                     } else {
-                        c.itemValue = 5;
+                        // Shelf is empty! Wait a bit.
+                        c.state = 'waitingAtShelf';
+                        c.waitTime = 0;
+                        resetCustomerLegs(c);
                     }
-                    // Go to register
+                }
+                break;
+
+            case 'waitingAtShelf':
+                c.waitTime += delta;
+                if (c.targetShelf.stock > 0) {
+                    // Item restocked! Grab it.
+                    c.targetShelf.stock--;
+                    updateShelfVisuals(c.targetShelf);
+                    const qualityMult = 1 + (upgrades.quality - 1) * 0.25;
+                    c.itemValue = Math.round((15 + Math.random() * 5) * qualityMult);
+                    
                     const queuePos = c.targetReg.queue.length;
                     if (queuePos < c.targetReg.queuePositions.length) {
                         c.target = c.targetReg.queuePositions[queuePos].clone();
@@ -955,6 +985,17 @@ function updateCustomers(delta) {
                         c.state = 'leaving';
                         c.target = new THREE.Vector3((Math.random() - 0.5) * 4, 0, 18);
                     }
+                } else if (c.waitTime > 5) {
+                    // Waited too long
+                    showEmote(c.mesh.position, Math.random() > 0.5 ? '😠' : '😢');
+                    c.state = 'leavingAngry';
+                    c.target = new THREE.Vector3((Math.random() - 0.5) * 4, 0, 18);
+                }
+                break;
+            
+            case 'leavingAngry':
+                if (moveToward(c, delta)) {
+                    removeCustomer(c, i);
                 }
                 break;
 
@@ -1114,6 +1155,73 @@ function checkInteractions(delta) {
     }
 }
 
+// ===== TUTORIAL & EMOTES =====
+function updateTutorial() {
+    if (tutorialStep === 0) {
+        if (tutorialMarker) tutorialMarker.style.display = 'none';
+        return;
+    }
+    
+    if (tutorialStep === 1) {
+        if (inventory.current > 0) {
+            tutorialStep = 2; 
+        } else {
+            positionTutorialMarker(supplyCrate.position.x, 2.5, supplyCrate.position.z, 'אסוף סחורה כאן');
+        }
+    }
+    
+    if (tutorialStep === 2) {
+        const firstShelf = shelves[0];
+        if (firstShelf && firstShelf.stock > 0) {
+            tutorialStep = 0; 
+            if (tutorialMarker) tutorialMarker.style.display = 'none';
+        } else if (firstShelf) {
+            positionTutorialMarker(firstShelf.x, 2.5, firstShelf.z, 'מלא את המדף כאן');
+        }
+    }
+}
+
+function positionTutorialMarker(worldX, worldY, worldZ, text) {
+    if (!tutorialMarker || !tutorialText) return;
+    
+    const pos = new THREE.Vector3(worldX, worldY, worldZ);
+    pos.project(camera);
+    
+    if (pos.z > 1) {
+        tutorialMarker.style.display = 'none';
+        return;
+    }
+    
+    const x = (pos.x * 0.5 + 0.5) * window.innerWidth;
+    const y = (-pos.y * 0.5 + 0.5) * window.innerHeight;
+    
+    tutorialMarker.style.display = 'block';
+    tutorialMarker.style.left = x + 'px';
+    tutorialMarker.style.top = y + 'px';
+    tutorialText.textContent = text;
+}
+
+function showEmote(worldPos, emoji) {
+    if (!emotesContainer) return;
+    const pos = worldPos.clone();
+    pos.y += 2.5;
+    pos.project(camera);
+    
+    if (pos.z > 1) return;
+    
+    const x = (pos.x * 0.5 + 0.5) * window.innerWidth;
+    const y = (-pos.y * 0.5 + 0.5) * window.innerHeight;
+    
+    const emote = document.createElement('div');
+    emote.className = 'customer-emote';
+    emote.textContent = emoji;
+    emote.style.left = x + 'px';
+    emote.style.top = y + 'px';
+    emotesContainer.appendChild(emote);
+    
+    setTimeout(() => emote.remove(), 3000);
+}
+
 // ===== UI =====
 function updateUI() {
     hudMoney.textContent = `💰 $${money.toLocaleString()}`;
@@ -1265,6 +1373,7 @@ function animate() {
             updatePlayer(delta);
             updateCamera(delta);
             checkInteractions(delta);
+            updateTutorial();
             updateCustomers(delta);
             updateRegisters(delta);
             updateButtons(delta);
@@ -1305,10 +1414,10 @@ function setupShop() {
     // Buy register
     createTycoonButton(-7, 7, '🧾 קנה קופה', 300, 'buyRegister', true, { x: -7, z: 4 });
 
-    // Repeatable upgrades
-    createTycoonButton(12, -7, '⚡ שדרג מהירות קופה', 150, 'upgradeSpeed', false, null);
-    createTycoonButton(12, -3, '⭐ שדרג איכות מוצרים', 200, 'upgradeQuality', false, null);
-    createTycoonButton(12, 1, '🎒 שדרג קיבולת', 100, 'upgradeCapacity', false, null);
+    // Repeatable upgrades (Cheaper base cost)
+    createTycoonButton(12, -7, '⚡ שדרג מהירות קופה', 100, 'upgradeSpeed', false, null);
+    createTycoonButton(12, -3, '⭐ שדרג איכות מוצרים', 150, 'upgradeQuality', false, null);
+    createTycoonButton(12, 1, '🎒 שדרג קיבולת', 50, 'upgradeCapacity', false, null);
 }
 
 // ===== INIT =====
@@ -1332,6 +1441,11 @@ function init() {
     joystickZone = document.getElementById('joystick-zone');
     joystickBase = document.getElementById('joystick-base');
     joystickStick = document.getElementById('joystick-stick');
+    
+    // Tutorial & Emotes
+    tutorialMarker = document.getElementById('tutorial-marker');
+    tutorialText = document.getElementById('tutorial-text');
+    emotesContainer = document.getElementById('emotes-container');
 
     try {
         createMaterials();

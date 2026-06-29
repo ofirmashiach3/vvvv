@@ -310,6 +310,67 @@ canvas {
     transition: transform 0.05s linear;
 }
 
+/* ===== TUTORIAL MARKER ===== */
+#tutorial-marker {
+    position: absolute;
+    pointer-events: none;
+    z-index: 200;
+    text-align: center;
+    animation: tutorialBounce 1s infinite;
+}
+.arrow-down {
+    color: #00f5a0;
+    font-size: 2rem;
+    text-shadow: 0 0 10px rgba(0,245,160,0.8);
+    margin-bottom: 5px;
+}
+.tutorial-text {
+    background: rgba(0,0,0,0.8);
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid #00f5a0;
+    font-weight: bold;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+@keyframes tutorialBounce {
+    0%, 100% { transform: translate(-50%, 0); }
+    50% { transform: translate(-50%, -15px); }
+}
+
+/* ===== EMOTES ===== */
+#emotes-container {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    pointer-events: none;
+}
+.customer-emote {
+    position: absolute;
+    font-size: 1.8rem;
+    animation: emoteFloat 3s forwards;
+    filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5));
+}
+@keyframes emoteFloat {
+    0% { transform: translate(-50%, 0) scale(0.5); opacity: 0; }
+    10% { transform: translate(-50%, -15px) scale(1.2); opacity: 1; }
+    20% { transform: translate(-50%, -10px) scale(1); opacity: 1; }
+    80% { transform: translate(-50%, -20px) scale(1); opacity: 1; }
+    100% { transform: translate(-50%, -30px) scale(0.8); opacity: 0; }
+}
+
+/* ===== BUTTON AFFORDABLE PULSE ===== */
+.button-label.affordable {
+    border-color: #00f5a0;
+    box-shadow: 0 0 10px rgba(0, 245, 160, 0.4);
+    animation: affordablePulse 1.5s infinite alternate;
+}
+@keyframes affordablePulse {
+    from { transform: translate(-50%, -50%) scale(1); }
+    to { transform: translate(-50%, -50%) scale(1.1); }
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 600px) {
     .start-content h1 { font-size: 2.2rem; }
