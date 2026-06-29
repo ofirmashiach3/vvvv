@@ -1281,35 +1281,34 @@ function initInput() {
 
     // Joystick Touch Input
     if (joystickZone && joystickBase && joystickStick) {
+        let baseOriginX = 0;
+        let baseOriginY = 0;
+        const maxRadius = 60; // Half of the 120px base
+
         const resetJoystick = () => {
             joystick.active = false;
             joystick.x = 0;
             joystick.y = 0;
             joystick.touchId = null;
             joystickStick.style.transform = `translate(-50%, -50%)`;
+            joystickBase.style.display = 'none';
         };
 
-        const handleTouch = (e) => {
-            e.preventDefault();
+        const handleTouchMove = (e) => {
             if (!joystick.active) return;
             
             // Find our specific touch
             let touch = null;
-            for(let i=0; i<e.touches.length; i++) {
-                if(e.touches[i].identifier === joystick.touchId) {
-                    touch = e.touches[i];
+            for(let i=0; i<e.changedTouches.length; i++) {
+                if(e.changedTouches[i].identifier === joystick.touchId) {
+                    touch = e.changedTouches[i];
                     break;
                 }
             }
             if (!touch) return;
 
-            const rect = joystickBase.getBoundingClientRect();
-            const centerX = rect.left + rect.width / 2;
-            const centerY = rect.top + rect.height / 2;
-            const maxRadius = rect.width / 2;
-
-            let dx = touch.clientX - centerX;
-            let dy = touch.clientY - centerY;
+            let dx = touch.clientX - baseOriginX;
+            let dy = touch.clientY - baseOriginY;
             const distance = Math.sqrt(dx * dx + dy * dy);
 
             if (distance > maxRadius) {
@@ -1331,10 +1330,21 @@ function initInput() {
             const touch = e.changedTouches[0];
             joystick.active = true;
             joystick.touchId = touch.identifier;
-            handleTouch(e);
+            
+            // Set dynamic position
+            baseOriginX = touch.clientX;
+            baseOriginY = touch.clientY;
+            joystickBase.style.left = baseOriginX + 'px';
+            joystickBase.style.top = baseOriginY + 'px';
+            joystickBase.style.display = 'block';
+            
+            handleTouchMove(e);
         }, { passive: false });
 
-        joystickZone.addEventListener('touchmove', handleTouch, { passive: false });
+        joystickZone.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            handleTouchMove(e);
+        }, { passive: false });
 
         const endTouch = (e) => {
             for(let i=0; i<e.changedTouches.length; i++) {

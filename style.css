@@ -272,17 +272,16 @@ canvas {
 /* ===== JOYSTICK ===== */
 #joystick-zone {
     position: fixed;
-    bottom: 20px;
-    left: 20px;
-    width: 150px;
-    height: 150px;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 50vw; /* left half of screen */
     z-index: 200;
-    border-radius: 50%;
     touch-action: none;
 }
 
 #joystick-base {
-    position: absolute;
+    position: fixed;
     top: 50%;
     left: 50%;
     width: 120px;
