@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏪 Shop Tycoon - משחק ניהול חנות</title>
+    <meta name="description" content="משחק טייקון תלת-ממדי בדפדפן - נהל חנות, מלא מדפים, שדרג קופות והרוויח כסף!">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>canvas{position:fixed;top:0;left:0;z-index:0;}</style>
+</head>
+<body>
+    <!-- Start Screen -->
+    <div id="start-screen">
+        <div class="start-content">
+            <h1>🏪 Shop Tycoon</h1>
+            <p class="subtitle">נהל את החנות שלך, מלא מדפים, שדרג ותרוויח!</p>
+            <div class="controls-info">
+                <div class="control-item"><span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span> תנועה</div>
+                <div class="control-item">🖱️ גלגלת = זום</div>
+                <div class="control-item">📦 עמוד ליד ארגז = אסוף סחורה</div>
+                <div class="control-item">🗄️ עמוד ליד מדף = מלא אותו</div>
+                <div class="control-item">🟢 דרוך על כפתור ירוק = קנה/שדרג</div>
+            </div>
+            <button id="start-btn" onclick="startGame()">▶ התחל לשחק!</button>
+        </div>
+    </div>
+
+    <!-- HUD -->
+    <div id="hud" style="display:none;">
+        <div class="hud-panel hud-money" id="hud-money">💰 $500</div>
+        <div class="hud-panel hud-inventory" id="hud-inventory">📦 0/5</div>
+        <div class="hud-panel hud-customers" id="hud-customers">👥 0/10</div>
+        <div class="hud-panel hud-stats" id="hud-stats">⚡1 | ⭐1 | 🎒1</div>
+    </div>
+
+    <!-- Interaction Hint -->
+    <div id="interaction-hint" style="display:none;"></div>
+
+    <!-- Floating labels container -->
+    <div id="labels-container"></div>
+
+    <!-- Money popups container -->
+    <div id="popups-container"></div>
+
+    <!-- Mobile Joystick -->
+    <div id="joystick-zone" style="display:none;">
+        <div id="joystick-base">
+            <div id="joystick-stick"></div>
+        </div>
+    </div>
+
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>

@@ -1,0 +1,320 @@
+/* ================================================
+   🏪 SHOP TYCOON - UI Styling
+   Premium glassmorphic HUD with animations
+   ================================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    overflow: hidden;
+    font-family: 'Inter', sans-serif;
+    background: #1a1a2e;
+    cursor: default;
+    touch-action: none; /* Prevent scroll on mobile */
+}
+
+canvas {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 0;
+}
+
+/* ===== START SCREEN ===== */
+#start-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    animation: bgShift 8s ease infinite alternate;
+}
+
+@keyframes bgShift {
+    0% { background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); }
+    100% { background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460); }
+}
+
+.start-content {
+    text-align: center;
+    color: white;
+    max-width: 500px;
+    padding: 40px;
+}
+
+.start-content h1 {
+    font-size: 3.5rem;
+    font-weight: 900;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, #00f5a0, #00d9f5);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+    from { filter: drop-shadow(0 0 10px rgba(0, 245, 160, 0.3)); }
+    to { filter: drop-shadow(0 0 25px rgba(0, 245, 160, 0.6)); }
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 30px;
+}
+
+.controls-info {
+    background: rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 30px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.1);
+    text-align: right;
+    direction: rtl;
+}
+
+.control-item {
+    padding: 8px 0;
+    font-size: 0.95rem;
+    color: rgba(255,255,255,0.85);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: flex-start;
+}
+
+.key {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #00f5a0;
+}
+
+#start-btn {
+    padding: 16px 48px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    border: none;
+    border-radius: 50px;
+    background: linear-gradient(135deg, #00f5a0, #00d9f5);
+    color: #0a0a1a;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 1px;
+}
+
+#start-btn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 8px 30px rgba(0, 245, 160, 0.4);
+}
+
+/* ===== HUD ===== */
+#hud {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.hud-panel {
+    padding: 12px 20px;
+    background: rgba(10, 10, 30, 0.75);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    min-width: 140px;
+    transition: transform 0.2s ease, background 0.3s;
+    text-align: left;
+    direction: ltr;
+}
+
+.hud-money {
+    font-size: 1.4rem;
+    font-weight: 900;
+    background: rgba(10, 10, 30, 0.85);
+    border: 1px solid rgba(0, 245, 160, 0.3);
+}
+
+.hud-panel.pulse {
+    animation: hudPulse 0.3s ease;
+}
+
+@keyframes hudPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* ===== INTERACTION HINT ===== */
+#interaction-hint {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    padding: 12px 28px;
+    background: rgba(10, 10, 30, 0.85);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 245, 160, 0.3);
+    border-radius: 50px;
+    color: #00f5a0;
+    font-size: 1rem;
+    font-weight: 600;
+    white-space: nowrap;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+/* ===== FLOATING LABELS (Tycoon Buttons) ===== */
+#labels-container {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    pointer-events: none;
+}
+
+.button-label {
+    position: absolute;
+    padding: 6px 14px;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(0, 245, 160, 0.4);
+    border-radius: 8px;
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-align: center;
+    white-space: nowrap;
+    pointer-events: none;
+    transition: opacity 0.2s;
+}
+
+.button-label .label-name {
+    display: block;
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 2px;
+}
+
+.button-label .label-cost {
+    display: block;
+    font-size: 1rem;
+    font-weight: 900;
+    color: #00f5a0;
+}
+
+.button-label.cant-afford .label-cost {
+    color: #ff4757;
+}
+
+/* ===== MONEY POPUPS ===== */
+#popups-container {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    pointer-events: none;
+}
+
+.money-popup {
+    position: absolute;
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: #00f5a0;
+    text-shadow: 0 2px 8px rgba(0, 245, 160, 0.5);
+    pointer-events: none;
+    animation: popupFloat 1.5s ease-out forwards;
+    white-space: nowrap;
+}
+
+.money-popup.negative {
+    color: #ff4757;
+    text-shadow: 0 2px 8px rgba(255, 71, 87, 0.5);
+}
+
+@keyframes popupFloat {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(0.5);
+    }
+    20% {
+        transform: translateY(-10px) scale(1.2);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-60px) scale(0.8);
+    }
+}
+
+/* ===== JOYSTICK ===== */
+#joystick-zone {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    width: 150px;
+    height: 150px;
+    z-index: 200;
+    border-radius: 50%;
+    touch-action: none;
+}
+
+#joystick-base {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 120px;
+    height: 120px;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    backdrop-filter: blur(5px);
+    pointer-events: none;
+}
+
+#joystick-stick {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 50px;
+    height: 50px;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 245, 160, 0.6);
+    border: 2px solid rgba(0, 245, 160, 0.8);
+    border-radius: 50%;
+    pointer-events: none;
+    box-shadow: 0 0 15px rgba(0, 245, 160, 0.4);
+    transition: transform 0.05s linear;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+    .start-content h1 { font-size: 2.2rem; }
+    .hud-panel { font-size: 0.9rem; padding: 8px 14px; }
+    .hud-money { font-size: 1.1rem; }
+    .button-label { font-size: 0.7rem; }
+    #joystick-zone { display: block !important; }
+}
